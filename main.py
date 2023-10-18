@@ -52,8 +52,11 @@ while len(lst) < 200 or count < 20:
         break
 for c, i in enumerate(lst):
     driver.get(i['url'])
-    brand = {x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip(): x for x in driver.find_elements(By.TAG_NAME, 'tr') if x.find_elements(
+    try:
+        brand = {x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip(): x for x in driver.find_elements(By.TAG_NAME, 'tr') if x.find_elements(
         By.TAG_NAME, 'th') and x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip() in ['Manufacturer', 'Brand']}
+    except:
+        brand = None
     if not brand:
         try:
             brand = driver.find_element(value='bylineInfo').get_attribute(

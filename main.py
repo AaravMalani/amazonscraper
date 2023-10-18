@@ -26,7 +26,7 @@ while len(lst) < 200 or count < 20:
                 'reviews': int(i.find_element(By.CSS_SELECTOR, "span>a.a-link-normal.s-link-style").get_attribute("innerText").replace(',', '')),
                 'price': int(prices[0].get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
                 'mrp': int((prices[0] if len(prices) == 1 else prices[1]).get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
-                'url': i.find_element(By.TAG_NAME, "a").get_attribute('href')
+                'url': [x for x in i.find_elements(By.TAG_NAME, "a") if not x.get_attribute('href').startswith('https://www.amazon.in/gp/bestsellers')][0].get_attribute('href')
             }
             try:
                 obj['rating'] = float(i.find_element(

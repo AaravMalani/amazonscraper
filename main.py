@@ -80,12 +80,13 @@ driver.get("https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&spr
 lst = []  # The list of entries
 count = 0 
 names = []
-while len(lst) < 200 or count < 20:
+while (len(lst) < 200 or count < 20) and count < 100:
     print(f'Page {count+1}')
     try:
         element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
         (By.CLASS_NAME, 'puis-card-container')))  # Wait for containers to load
-    except:
+    except Exception as e:
+        print(e)
         driver.refresh()
         continue
     for i in driver.find_elements(By.CLASS_NAME, 'puis-card-container'):

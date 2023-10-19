@@ -4,58 +4,13 @@ from selenium.webdriver.common.by import By
 
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import threading
 import csv
-options = selenium.webdriver.ChromeOptions()
-options.add_argument('--headless=new')
-driver = selenium.webdriver.Chrome(options=options)
-driver.get("https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1")
-lst = []  # The list of entries
-count = 0 
-names = []
-while len(lst) < 200 or count < 20:
-    print(f'Page {count+1}')
-
-    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
-        (By.CLASS_NAME, 'puis-card-container')))  # Wait for containers to load
-    for i in driver.find_elements(By.CLASS_NAME, 'puis-card-container'):
-        if 'Sponsored' in i.text.split("\n"):  # Skip sponsored items
-            continue
-        try:
-            prices = i.find_elements(By.CLASS_NAME, "a-price")
-            obj = {
-                'name': i.find_element(By.CSS_SELECTOR, "span.a-size-medium.a-color-base.a-text-normal").get_attribute("innerText"),
-                'reviews': int(i.find_element(By.CSS_SELECTOR, "span>a.a-link-normal.s-link-style").get_attribute("innerText").replace(',', '')),
-                'price': int(prices[0].get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
-                'mrp': int((prices[0] if len(prices) == 1 else prices[1]).get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
-                'url': [x for x in i.find_elements(By.TAG_NAME, "a") if not x.get_attribute('href').startswith('https://www.amazon.in/gp/bestsellers')][0].get_attribute('href')
-            }
-            if obj['name'] in names:
-                continue
-            
-            try:
-                obj['rating'] = float(i.find_element(
-                    By.CLASS_NAME, "a-icon-alt").get_attribute("innerText").split()[0])
-            except:
-                obj['rating'] = None
-            names+=[obj['name']]
-        except:
-            continue
-        lst += [obj]
-    count += 1
-    k = False
-    while True:
-        try:
-            if not driver.find_element(By.CLASS_NAME, "s-pagination-next").is_enabled():
-                k = True
-                break
-            driver.find_element(By.CLASS_NAME, "s-pagination-next").click()
-            break
-        except:
-            pass
-        driver.refresh()
-    if k:
-        break
-for c, i in enumerate(lst):
+def check_page(c, i):
+    global lst
+    options = selenium.webdriver.ChromeOptions()
+    options.add_argument('--headless=new')
+    driver = selenium.webdriver.Chrome(options=options)
     driver.get(i['url'])
     try:
         brand = {x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip(): x for x in driver.find_elements(By.TAG_NAME, 'tr') if x.find_elements(
@@ -109,6 +64,62 @@ for c, i in enumerate(lst):
         'description': featureBullets,
         'productDescription': description
     })
+options = selenium.webdriver.ChromeOptions()
+options.add_argument('--headless=new')
+driver = selenium.webdriver.Chrome(options=options)
+driver.get("https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1")
+lst = []  # The list of entries
+count = 0 
+names = []
+while len(lst) < 200 or count < 20:
+    print(f'Page {count+1}')
+
+    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+        (By.CLASS_NAME, 'puis-card-container')))  # Wait for containers to load
+    for i in driver.find_elements(By.CLASS_NAME, 'puis-card-container'):
+        if 'Sponsored' in i.text.split("\n"):  # Skip sponsored items
+            continue
+        try:
+            prices = i.find_elements(By.CLASS_NAME, "a-price")
+            obj = {
+                'name': i.find_element(By.CSS_SELECTOR, "span.a-size-medium.a-color-base.a-text-normal").get_attribute("innerText"),
+                'reviews': int(i.find_element(By.CSS_SELECTOR, "span>a.a-link-normal.s-link-style").get_attribute("innerText").replace(',', '')),
+                'price': int(prices[0].get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
+                'mrp': int((prices[0] if len(prices) == 1 else prices[1]).get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
+                'url': [x for x in i.find_elements(By.TAG_NAME, "a") if not x.get_attribute('href').startswith('https://www.amazon.in/gp/bestsellers')][0].get_attribute('href')
+            }
+            if obj['name'] in names:
+                continue
+            
+            try:
+                obj['rating'] = float(i.find_element(
+                    By.CLASS_NAME, "a-icon-alt").get_attribute("innerText").split()[0])
+            except:
+                obj['rating'] = None
+            names+=[obj['name']]
+        except:
+            continue
+        lst += [obj]
+    count += 1
+    k = False
+    while True:
+        try:
+            if not driver.find_element(By.CLASS_NAME, "s-pagination-next").is_enabled():
+                k = True
+                break
+            driver.find_element(By.CLASS_NAME, "s-pagination-next").click()
+            break
+        except:
+            pass
+        driver.refresh()
+    if k:
+        break
+threads = [threading.Thread(target=check_page, args=i, daemon=True) for i in enumerate(lst)]
+for i in threads:
+    i.start()
+for i in threads:
+    i.join()
+
 with open('csv-dump.csv', 'w', encoding='utf-8', newline='') as f:
     writer = csv.DictWriter(f, lst[0].keys())
     writer.writeheader()

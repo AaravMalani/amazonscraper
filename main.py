@@ -12,6 +12,15 @@ def check_page(c, i):
     options.add_argument('--headless=new')
     driver = selenium.webdriver.Chrome(options=options)
     driver.get(i['url'])
+    while True:
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+            (By.id, 'productTitle')))
+            break
+
+        except:
+            pass
+        driver.refresh()
     try:
         brand = {x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip(): x for x in driver.find_elements(By.TAG_NAME, 'tr') if x.find_elements(
         By.TAG_NAME, 'th') and x.find_element(By.TAG_NAME, 'th').get_attribute("innerText").strip() in ['Manufacturer', 'Brand']}
@@ -73,9 +82,12 @@ count = 0
 names = []
 while len(lst) < 200 or count < 20:
     print(f'Page {count+1}')
-
-    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
+    try:
+        element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
         (By.CLASS_NAME, 'puis-card-container')))  # Wait for containers to load
+    except:
+        driver.refresh()
+        continue
     for i in driver.find_elements(By.CLASS_NAME, 'puis-card-container'):
         if 'Sponsored' in i.text.split("\n"):  # Skip sponsored items
             continue

@@ -33,18 +33,19 @@ page = int(args.job)*20//int(args.jobs) + 1  # Get the page for the job
 lst = []  # The list of entries
 count = 0 
 names = set() # Set of names
-while len(lst) < 200/int(args.jobs) and count < (20 / int(args.jobs)) and count < 100:
+while (len(lst) < 200/int(args.jobs) or count < (20 / int(args.jobs))) and count < 100:
     driver.get(f"https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1&page="+str(page))
     print(f'Page {count+1}')
     try:
         element = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
         (By.CLASS_NAME, 'puis-card-container')))  # Wait for containers to load
     except Exception as e:
-        driver.refresh() # Ratelimited or slow
-        continue
+        break
+    isSet = False # No more results
     for i in driver.find_elements(By.CLASS_NAME, 'puis-card-container'):
         if 'Sponsored' in i.text.split("\n"):  # Skip sponsored items
             continue
+        isSet = True
         try:
             prices = i.find_elements(By.CLASS_NAME, "a-price") 
             name = i.find_element(By.CSS_SELECTOR, "span.a-size-medium.a-color-base.a-text-normal").get_attribute("innerText") # Find the span with medium text size in the card (the heading)
@@ -65,11 +66,15 @@ while len(lst) < 200/int(args.jobs) and count < (20 / int(args.jobs)) and count 
             except:
                 obj['rating'] = None # There is no rating
             names.add(obj['name'])
-        except:
+        except Exception as e:
+            print(e)
             continue
         lst += [obj] # Add object
+    if not isSet:
+        break
+
     count += 1
-    page+=1
+    page +=1
 for c,i in enumerate(lst):
     driver.get(i['url']) # Get the page URL
     check = 0 # Check 10 times if the title is present (to prevent infinite ratelimited loops, its better to skip the page)
@@ -123,7 +128,7 @@ for c,i in enumerate(lst):
     asin = i['url'].find('/dp/') # Get the ASIN from the URL
     asin = i['url'][asin+4:i['url'].find('/', asin+4)]  
     try:
-        featureBullets = driver.find_element(value='feature-bullets').get_attribute("innerText") # Check for the bullet points below the title
+        featureBullets = driver.find_element(value='feature-bullets').find_element(By.TAG_NAME, "ul").get_attribute("innerText") # Check for the bullet points below the title
     except:
         featureBullets = None # Not found
     

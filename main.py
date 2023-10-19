@@ -23,7 +23,10 @@ options.add_experimental_option('prefs', {'profile.default_content_setting_value
                             'protected_media_identifier': 2, 'app_banner': 2, 'site_engagement': 2, 
                             'durable_storage': 2}})
 driver = selenium.webdriver.Chrome(options=options)
-driver.get(f"https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1&page="+(int(os.getenv('JOB'))*20//int(os.getenv('JOBS'))))
+os.environ['JOB'] = os.environ.get('JOB', '0')
+os.environ['JOBS'] = os.environ.get('JOBS', '1')
+
+driver.get(f"https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1&page="+str(int(os.getenv('JOB'))*20//int(os.getenv('JOBS'))))
 lst = []  # The list of entries
 count = 0 
 names = []

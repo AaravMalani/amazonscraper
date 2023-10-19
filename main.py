@@ -134,7 +134,7 @@ for c,i in enumerate(lst):
     except:
         featureBullets = None
     
-    lst[c + (len(lst)*count)//1].update({
+    lst[c].update({
         'manufacturer': brand,
         'asin': asin,
         'description': featureBullets,

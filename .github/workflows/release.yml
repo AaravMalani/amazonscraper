@@ -145,7 +145,8 @@ jobs:
             -   name: "Merge artifacts"
                 run: |
                     mv */*.csv .
-                    cat *.csv > csv-dump.csv
+                    echo "name,reviews,price,mrp,url,rating,manufacturer,asin,description,productDescription" > header.txt
+                    cat header.txt *.csv > csv-dump.csv
             -   name: Create GitHub release
                 id: create_release
                 uses: actions/create-release@v1

@@ -27,8 +27,7 @@ jobs:
                 fetch-depth: 0
             - run: |
                 pip3 install -r requirements.txt
-                JOB=${{ inputs.job }} JOBS=${{ inputs.jobs}} python3 main.py
-                mv csv-dump.csv csv-dump-${{inputs.job}}.csv
+                python3 main.py --job ${{ inputs.job }} --jobs ${{ inputs.jobs }} --remove-header -o csv-dump-${{inputs.job}}.csv
             - uses: actions/upload-artifact@v3
               with:
                 name: csv-build-${{inputs.job}}

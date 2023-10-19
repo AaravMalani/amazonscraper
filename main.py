@@ -79,7 +79,7 @@ def check_page(count, sub):
         except:
             featureBullets = None
         
-        lst[c + (len(lst)*count)//os.cpu_count()].update({
+        lst[c + (len(lst)*count)//1].update({
             'manufacturer': brand,
             'asin': asin,
             'description': featureBullets,
@@ -152,7 +152,7 @@ while (len(lst) < 200 or count < 20) and count < 100:
         driver.refresh()
     if k:
         break
-threads = [threading.Thread(target=check_page, args=(i, lst[(len(lst)*i)//os.cpu_count(): (len(lst)*(i+1))//os.cpu_count() ]), daemon=True) for i in range(os.cpu_count())]
+threads = [threading.Thread(target=check_page, args=(i, lst[(len(lst)*i)//1: (len(lst)*(i+1))//1 ]), daemon=True) for i in range(1)]
 for i in threads:
     i.start()
 for i in threads:

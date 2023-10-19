@@ -5,102 +5,102 @@ on: push
 
 jobs:
     build1:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 0
             jobs: 20
     build2:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 1
             jobs: 20
     build3:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 2
             jobs: 20
     build4:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 3
             jobs: 20
     build5:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 4
             jobs: 20
     build6:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 5
             jobs: 20
     build7:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 6
             jobs: 20
     build8:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 7
             jobs: 20
     build9:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 8
             jobs: 20
     build10:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 9
             jobs: 20
     build11:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 10
             jobs: 20
     build12:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 11
             jobs: 20
     build13:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 12
             jobs: 20
     build14:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 13
             jobs: 20
     build15:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 14
             jobs: 20
     build16:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 15
             jobs: 20
     build17:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 16
             jobs: 20
     build18:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 17
             jobs: 20
     build19:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 18
             jobs: 20
     build20:
-        uses: upload.yml@main
+        uses: ./.github/workflows/upload.yml
         with:
             job: 19
             jobs: 20

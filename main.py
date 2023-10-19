@@ -33,7 +33,7 @@ page = int(args.job)*20//int(args.jobs) + 1  # Get the page for the job
 lst = []  # The list of entries
 count = 0 
 names = set() # Set of names
-while (len(lst) < 200/int(args.jobs) or count < 20 / int(args.jobs)) and count < 100:
+while len(lst) < 200/int(args.jobs) and count < (20 / int(args.jobs)) and count < 100:
     driver.get(f"https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1&page="+str(page))
     print(f'Page {count+1}')
     try:

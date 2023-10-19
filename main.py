@@ -11,6 +11,7 @@ driver = selenium.webdriver.Chrome(options=options)
 driver.get("https://www.amazon.in/s?k=bags&crid=2M096C61O4MLT&qid=1653308124&sprefix=ba%2Caps%2C283&ref=sr_pg_1")
 lst = []  # The list of entries
 count = 0 
+names = []
 while len(lst) < 200 or count < 20:
     print(f'Page {count+1}')
 
@@ -28,11 +29,15 @@ while len(lst) < 200 or count < 20:
                 'mrp': int((prices[0] if len(prices) == 1 else prices[1]).get_attribute("innerText")[1:].replace(',', '').split("\n")[0]),
                 'url': [x for x in i.find_elements(By.TAG_NAME, "a") if not x.get_attribute('href').startswith('https://www.amazon.in/gp/bestsellers')][0].get_attribute('href')
             }
+            if obj['name'] in names:
+                continue
+            
             try:
                 obj['rating'] = float(i.find_element(
                     By.CLASS_NAME, "a-icon-alt").get_attribute("innerText").split()[0])
             except:
                 obj['rating'] = None
+            names+=[obj['name']]
         except:
             continue
         lst += [obj]

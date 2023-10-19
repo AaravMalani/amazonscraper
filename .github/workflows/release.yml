@@ -1,0 +1,168 @@
+name: "Upload"
+
+on: push
+                
+
+jobs:
+    build1:
+        uses: upload.yml@main
+        with:
+            job: 0
+            jobs: 20
+    build2:
+        uses: upload.yml@main
+        with:
+            job: 1
+            jobs: 20
+    build3:
+        uses: upload.yml@main
+        with:
+            job: 2
+            jobs: 20
+    build4:
+        uses: upload.yml@main
+        with:
+            job: 3
+            jobs: 20
+    build5:
+        uses: upload.yml@main
+        with:
+            job: 4
+            jobs: 20
+    build6:
+        uses: upload.yml@main
+        with:
+            job: 5
+            jobs: 20
+    build7:
+        uses: upload.yml@main
+        with:
+            job: 6
+            jobs: 20
+    build8:
+        uses: upload.yml@main
+        with:
+            job: 7
+            jobs: 20
+    build9:
+        uses: upload.yml@main
+        with:
+            job: 8
+            jobs: 20
+    build10:
+        uses: upload.yml@main
+        with:
+            job: 9
+            jobs: 20
+    build11:
+        uses: upload.yml@main
+        with:
+            job: 10
+            jobs: 20
+    build12:
+        uses: upload.yml@main
+        with:
+            job: 11
+            jobs: 20
+    build13:
+        uses: upload.yml@main
+        with:
+            job: 12
+            jobs: 20
+    build14:
+        uses: upload.yml@main
+        with:
+            job: 13
+            jobs: 20
+    build15:
+        uses: upload.yml@main
+        with:
+            job: 14
+            jobs: 20
+    build16:
+        uses: upload.yml@main
+        with:
+            job: 15
+            jobs: 20
+    build17:
+        uses: upload.yml@main
+        with:
+            job: 16
+            jobs: 20
+    build18:
+        uses: upload.yml@main
+        with:
+            job: 17
+            jobs: 20
+    build19:
+        uses: upload.yml@main
+        with:
+            job: 18
+            jobs: 20
+    build20:
+        uses: upload.yml@main
+        with:
+            job: 19
+            jobs: 20
+    release:
+        needs:
+            - build1
+            - build2
+            - build3
+            - build4
+            - build5
+            - build6
+            - build7
+            - build8
+            - build9
+            - build10
+            - build11
+            - build12
+            - build13
+            - build14
+            - build15
+            - build16
+            - build17
+            - build18
+            - build19
+            - build20
+    
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v3
+                with:
+                    fetch-depth: 0 
+            -   name: Declare github short hash.
+                id: vars
+                shell: bash
+                run: |
+                    echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+            -   name: Download artifacts
+                uses: actions/download-artifact@v2
+                with:
+                    path: .
+            -   name: "Merge artifacts"
+                run: |
+                    mv */*.csv .
+                    cat *.csv > csv-dump.csv
+            -   name: Create GitHub release
+                id: create_release
+                uses: actions/create-release@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    tag_name: ${{ steps.vars.outputs.sha_short }}
+                    release_name: csvbuild ${{ steps.vars.outputs.sha_short }}
+                    draft: false
+                    prerelease: false
+            -   name: Upload Asset.
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: csv-dump.csv
+                    asset_name: csv-${{ steps.vars.outputs.sha_short }}.csv
+                    asset_content_type: text/csv
+        
